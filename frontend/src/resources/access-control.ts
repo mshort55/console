@@ -12,6 +12,13 @@ export const AccessControlDefinition: IResourceDefinition = {
   kind: AccessControlKind,
 }
 
+export interface Subject {
+  apiGroup: string
+  kind: 'User' | 'Group' | 'ServiceAccount'
+  name: string
+  namespace?: string
+}
+
 export interface RoleBinding {
   namespace: string
   roleRef: {
@@ -26,17 +33,22 @@ export interface RoleBinding {
   }
 }
 
-export interface AccessControl extends IResource {
-  /**
-   * APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-   */
-  apiVersion: AccessControlApiVersionType
-  /**
-   * Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-   */
-  kind: AccessControlKindType
+export interface ClusterRoleBinding {
+  name: string
+  roleRef: {
+    apiGroup: string
+    kind: 'ClusterRole'
+    name: string
+  }
+  subject?: Subject
+  subjects?: Subject[]
+}
 
+export interface AccessControl extends IResource {
+  apiVersion: AccessControlApiVersionType
+  kind: AccessControlKindType
   spec: {
-    roleBindings: RoleBinding[]
+    roleBindings?: RoleBinding[]
+    clusterRoleBinding?: ClusterRoleBinding
   }
 }

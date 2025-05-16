@@ -111,7 +111,16 @@ const COLUMN_CELLS = {
     </span>
   ),
   USER_GROUP: (accessControl: AccessControl, t: TFunction) => {
-    const users_groups = accessControl.spec.roleBindings.map((e) => `${e.subject.kind}: ${e.subject.name}`) // TODO: translate kind
+    const rollBindingsUsersGroups = accessControl.spec.roleBindings
+      ?.filter((e) => e.subject?.kind && e.subject?.name)
+      .map((e) => `${e.subject.kind}: ${e.subject.name}`) ?? []
+    
+    const clusterRollBindingUserGroup = accessControl.spec.clusterRoleBinding?.subject?.kind && 
+      accessControl.spec.clusterRoleBinding?.subject?.name
+      ? `${accessControl.spec.clusterRoleBinding.subject.kind}: ${accessControl.spec.clusterRoleBinding.subject.name}`
+      : null
+
+    const users_groups = [...rollBindingsUsersGroups, ...(clusterRollBindingUserGroup ? [clusterRollBindingUserGroup] : [])]
     return users_groups ? (
       <AcmLabels
         labels={users_groups}
@@ -126,7 +135,9 @@ const COLUMN_CELLS = {
     )
   },
   ROLES: (accessControl: AccessControl, t: TFunction) => {
-    const roles = accessControl.spec.roleBindings.map((e) => e.roleRef.name)
+    const rollBindingRoles = accessControl.spec.roleBindings?.map((e) => e.roleRef.name) ?? []
+    const clusterRollBindingRole = accessControl.spec.clusterRoleBinding?.roleRef?.name
+    const roles = [...rollBindingRoles, clusterRollBindingRole].filter((role): role is string => role !== undefined)
     return roles ? (
       <AcmLabels
         labels={roles}
@@ -141,7 +152,11 @@ const COLUMN_CELLS = {
     )
   },
   NAMESPACES: (accessControl: AccessControl, t: TFunction) => {
-    const namespaces = accessControl.spec.roleBindings.map((e) => e.namespace)
+    const rbNamespaces = accessControl.spec.roleBindings?.map((e) => e.namespace) ?? []
+    const namespaces = [
+      ...rbNamespaces,
+      ...(accessControl.spec.clusterRoleBinding?.roleRef ? ['All Namespaces'] : [])
+    ]
     return namespaces ? (
       <AcmLabels
         labels={namespaces}
@@ -216,24 +231,24 @@ const accessControlTableColumns = ({ t, setModalProps, navigate }: AccessControl
   {
     header: t('Users/Groups'),
     // TODO: users or groups
-    search: (accessControl: AccessControl) => accessControl.spec.roleBindings.map((e) => e.subject.name).join(),
+    search: (accessControl: AccessControl) => accessControl.spec.roleBindings?.map((e) => e.subject.name).join(),
     cell: (accessControl: AccessControl) => COLUMN_CELLS.USER_GROUP(accessControl, t),
-    exportContent: (accessControl: AccessControl) => accessControl.spec.roleBindings.map((e) => e.subject.name),
+    exportContent: (accessControl: AccessControl) => accessControl.spec.roleBindings?.map((e) => e.subject.name),
   },
   {
     header: t('Roles'),
-    search: (accessControl: AccessControl) => accessControl.spec.roleBindings.map((e) => e.roleRef.name).join(),
+    search: (accessControl: AccessControl) => accessControl.spec.roleBindings?.map((e) => e.roleRef.name).join(),
     cell: (accessControl: AccessControl) => COLUMN_CELLS.ROLES(accessControl, t),
     exportContent: (accessControl: AccessControl) => [
-      ...new Set(accessControl.spec.roleBindings.map((e) => e.roleRef.name)),
+      ...new Set(accessControl.spec.roleBindings?.map((e) => e.roleRef.name)),
     ],
   },
   {
     header: t('Namespaces'),
-    search: (accessControl: AccessControl) => accessControl.spec.roleBindings.map((e) => e.namespace).join(),
+    search: (accessControl: AccessControl) => accessControl.spec.roleBindings?.map((e) => e.namespace).join(),
     cell: (accessControl: AccessControl) => COLUMN_CELLS.NAMESPACES(accessControl, t),
     exportContent: (accessControl: AccessControl) => [
-      ...new Set(accessControl.spec.roleBindings.map((e) => e.namespace)),
+      ...new Set(accessControl.spec.roleBindings?.map((e) => e.namespace)),
     ],
   },
   {
@@ -271,7 +286,7 @@ const useFilters = ({
           }))
           .sort((lhs, rhs) => compareStrings(lhs.label, rhs.label)),
         tableFilterFn: (selectedValues: string[], item: AccessControl) =>
-          selectedValues.some((e) => item.spec.roleBindings.map((e) => e.namespace).includes(e)),
+          selectedValues.some((e) => item.spec.roleBindings?.map((e) => e.namespace).includes(e)),
       },
       {
         id: 'user',
@@ -280,7 +295,7 @@ const useFilters = ({
           ...new Set(
             accessControls?.flatMap(
               (accessControl) =>
-                accessControl.spec.roleBindings.filter((e) => e.subject.kind === 'User').map((e) => e.subject.name) ??
+                accessControl.spec.roleBindings?.filter((e) => e.subject.kind === 'User').map((e) => e.subject.name) ??
                 []
             )
           ),
@@ -290,7 +305,7 @@ const useFilters = ({
         tableFilterFn: (selectedValues: string[], item: AccessControl) =>
           selectedValues.some((e) =>
             item.spec.roleBindings
-              .filter((e) => e.subject.kind === 'User')
+              ?.filter((e) => e.subject.kind === 'User')
               .map((e) => e.subject.name)
               .includes(e)
           ),
@@ -302,7 +317,7 @@ const useFilters = ({
           ...new Set(
             accessControls?.flatMap(
               (accessControl) =>
-                accessControl.spec.roleBindings.filter((e) => e.subject.kind === 'User').map((e) => e.subject.name) ??
+                accessControl.spec.roleBindings?.filter((e) => e.subject.kind === 'User').map((e) => e.subject.name) ??
                 []
             )
           ),
@@ -312,7 +327,7 @@ const useFilters = ({
         tableFilterFn: (selectedValues: string[], item: AccessControl) =>
           selectedValues.some((e) =>
             item.spec.roleBindings
-              .filter((e) => e.subject.kind === 'User')
+              ?.filter((e) => e.subject.kind === 'User')
               .map((e) => e.subject.name)
               .includes(e)
           ),
@@ -324,7 +339,7 @@ const useFilters = ({
           ...new Set(
             accessControls?.flatMap(
               (accessControl) =>
-                accessControl.spec.roleBindings.filter((e) => e.subject.kind === 'Role').map((e) => e.subject.name) ??
+                accessControl.spec.roleBindings?.filter((e) => e.subject.kind === 'Role').map((e) => e.subject.name) ??
                 []
             )
           ),
@@ -334,7 +349,7 @@ const useFilters = ({
         tableFilterFn: (selectedValues: string[], item: AccessControl) =>
           selectedValues.some((e) =>
             item.spec.roleBindings
-              .filter((e) => e.subject.kind === 'Role')
+              ?.filter((e) => e.subject.kind === 'Role')
               .map((e) => e.subject.name)
               .includes(e)
           ),
@@ -349,7 +364,10 @@ export { accessControlTableColumns, ACTIONS, COLUMN_CELLS, EXPORT_FILE_PREFIX, u
 export function useAccessControlFilter() {
   const { accessControlState } = useSharedAtoms()
   const all = useRecoilValue(accessControlState)
-  const filters = ['kubevirt.io:view', 'kubevirt.io:edit', 'kubevirt.io:admin']
-  const accessControls = all.filter((ac) => ac.spec.roleBindings?.some((rb) => filters.includes(rb.roleRef.name)))
-  return accessControls
+  const filters = ['kubevirt.io:view', 'kubevirt.io:edit', 'kubevirt.io:admin', 'kubevirt.io:matttest']
+  const roleBindingMatches = all.filter((ac) => ac.spec.roleBindings?.some((rb) => filters.includes(rb.roleRef.name)))
+  const clusterRoleBindingMatches = all.filter(
+    (ac) => ac.spec.clusterRoleBinding?.roleRef?.name && filters.includes(ac.spec.clusterRoleBinding.roleRef.name)
+  )
+  return [...roleBindingMatches, ...clusterRoleBindingMatches]
 }

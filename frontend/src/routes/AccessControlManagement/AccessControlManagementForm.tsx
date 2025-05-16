@@ -60,6 +60,12 @@ const AccessControlManagementForm = ({
   const [selectedRoles, setSelectedRoles] = useState<string[]>([])
   const [selectedNamespaces, setSelectedNamespaces] = useState<string[]>([])
 
+  // Cluster Role Binding states
+  const [crbSelectedUserGroup, setCrbSelectedUserGroup] = useState<string>('')
+  const [crbSelectedRole, setCrbSelectedRole] = useState<string>('')
+  const [crbSelectedNamespace, setCrbSelectedNamespace] = useState<string>('')
+  const [crbSubjectType, setCrbSubjectType] = useState<'User' | 'Group'>('User')
+
   const [subjectType, setSubjectType] = useState<'User' | 'Group'>('User')
 
   const { submitForm } = useContext(LostChangesContext)
@@ -74,6 +80,13 @@ const AccessControlManagementForm = ({
       setSelectedUserNames([...new Set(accessControl.spec.roleBindings.map((rb) => rb.subject.name))])
       setSelectedRoles([...new Set(accessControl.spec.roleBindings.map((rb) => rb.roleRef.name))])
       setSelectedNamespaces([...new Set(accessControl.spec.roleBindings.map((rb) => rb.namespace))])
+    }
+
+    if (accessControl?.spec?.clusterRoleBinding) {
+      setCrbSelectedUserGroup(accessControl.spec.clusterRoleBinding.subject?.name ?? '')
+      setCrbSelectedRole(accessControl.spec.clusterRoleBinding.roleRef?.name ?? '')
+      setCrbSelectedNamespace('All Namespaces')
+      setCrbSubjectType(accessControl.spec.clusterRoleBinding.subjects?.[0]?.kind === 'Group' ? 'Group' : 'User')
     }
   }, [accessControl?.metadata])
 
@@ -143,6 +156,23 @@ const AccessControlManagementForm = ({
       )
     )
 
+    const clusterRoleBinding =
+      crbSelectedUserGroup && crbSelectedRole
+        ? {
+            name: crbSelectedUserGroup,
+            roleRef: {
+              name: crbSelectedRole,
+              apiGroup: 'rbac.authorization.k8s.io',
+              kind: 'ClusterRole',
+            },
+            subject: {
+              name: crbSelectedUserGroup,
+              apiGroup: 'rbac.authorization.k8s.io',
+              kind: crbSubjectType,
+            },
+          }
+        : undefined
+
     return [
       {
         apiVersion: AccessControlApiVersion,
@@ -153,6 +183,7 @@ const AccessControlManagementForm = ({
         },
         spec: {
           roleBindings,
+          clusterRoleBinding,
         },
       },
     ]
@@ -237,7 +268,7 @@ const AccessControlManagementForm = ({
               value: namespace,
               text: namespace,
             })),
-            isRequired: true,
+            isRequired: !crbSelectedRole && !crbSelectedUserGroup,
             isHidden: isViewing,
           },
           {
@@ -253,7 +284,7 @@ const AccessControlManagementForm = ({
               { id: 'user', value: 'user', text: t('User') },
               { id: 'group', value: 'group', text: t('Group') },
             ],
-            isRequired: true,
+            isRequired: !crbSelectedUserGroup && !crbSelectedRole,
             isHidden: isViewing,
           },
           {
@@ -267,7 +298,7 @@ const AccessControlManagementForm = ({
               id: val,
               value: val,
             })),
-            isRequired: true,
+            isRequired: !crbSelectedRole && !crbSelectedUserGroup,
             isHidden: isViewing,
           },
           {
@@ -278,7 +309,7 @@ const AccessControlManagementForm = ({
             value: selectedRoles,
             onChange: (values) => setSelectedRoles(values),
             options: roles.map((r) => ({ id: r.id, value: r.value })),
-            isRequired: true,
+            isRequired: !crbSelectedRole && !crbSelectedUserGroup,
             isHidden: isViewing,
           },
           {
@@ -298,6 +329,86 @@ const AccessControlManagementForm = ({
                 <StackItem>
                   <Title headingLevel="h6">{t('Roles')}</Title>
                   <AcmLabels isVertical={false} labels={selectedRoles} />
+                </StackItem>
+              </Stack>
+            ),
+          },
+        ],
+      },
+      {
+        type: 'Section',
+        title: t('Cluster Role Binding'),
+        wizardTitle: t('Cluster Role Binding'),
+        inputs: [
+          {
+            id: 'crb-namespaces',
+            type: 'Multiselect',
+            label: t('Namespaces'),
+            placeholder: 'Select or enter namespace',
+            value: [crbSelectedNamespace],
+            onChange: (values) => setCrbSelectedNamespace(values[0] || ''),
+            options: [{ id: 'all', value: 'All Namespaces', text: 'All Namespaces' }],
+            isRequired: !selectedUserNames.length && !selectedRoles.length,
+            isHidden: isViewing,
+          },
+          {
+            id: 'crb-selectionType',
+            type: 'Radio',
+            label: '',
+            value: crbSubjectType.toLowerCase(),
+            onChange: (value: string) => {
+              setCrbSelectedUserGroup('')
+              setCrbSubjectType(value === 'group' ? 'Group' : 'User')
+            },
+            options: [
+              { id: 'user', value: 'user', text: t('User') },
+              { id: 'group', value: 'group', text: t('Group') },
+            ],
+            isRequired: !selectedRoles.length && !selectedUserNames.length,
+            isHidden: isViewing,
+          },
+          {
+            id: 'crb-subject',
+            type: 'Multiselect',
+            label: crbSubjectType === 'Group' ? t('Groups') : t('Users'),
+            placeholder: crbSubjectType === 'Group' ? t('Select or enter group name') : t('Select or enter user name'),
+            value: crbSelectedUserGroup ? [crbSelectedUserGroup] : [],
+            onChange: (values) => setCrbSelectedUserGroup(values[0] || ''),
+            options: (crbSubjectType === 'Group' ? allGroups : allUsers).map((val) => ({
+              id: val,
+              value: val,
+            })),
+            isRequired: !selectedRoles.length && !selectedUserNames.length,
+            isHidden: isViewing,
+          },
+          {
+            id: 'crb-roles',
+            type: 'Multiselect',
+            label: t('Roles'),
+            placeholder: 'Select or enter roles',
+            value: crbSelectedRole ? [crbSelectedRole] : [],
+            onChange: (values) => setCrbSelectedRole(values[0] || ''),
+            options: roles.map((r) => ({ id: r.id, value: r.value })),
+            isRequired: !selectedRoles.length && !selectedUserNames.length,
+            isHidden: isViewing,
+          },
+          {
+            id: 'crb-custom-labels',
+            type: 'Custom',
+            isHidden: !isViewing,
+            component: (
+              <Stack hasGutter>
+                <StackItem>
+                  <Title headingLevel="h6">{t('Namespaces')}</Title>
+                  <AcmLabels isVertical={false} labels={crbSelectedNamespace ? [crbSelectedNamespace] : []} />
+                </StackItem>
+                <StackItem>
+                  <Title headingLevel="h6">{t('Users')}</Title>
+                  <AcmLabels isVertical={false} labels={crbSelectedUserGroup ? [crbSelectedUserGroup] : []} />
+                </StackItem>
+                <StackItem>
+                  <Title headingLevel="h6">{t('Roles')}</Title>
+                  <AcmLabels isVertical={false} labels={crbSelectedRole ? [crbSelectedRole] : []} />
                 </StackItem>
               </Stack>
             ),
