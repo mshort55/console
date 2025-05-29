@@ -28,7 +28,7 @@ const useRoleBinding = () => {
   )
 
   const setSubjectKind = (value: string) => {
-    const newSubjectKind = value === 'group' ? 'Group' : 'User'
+    const newSubjectKind = value.toLowerCase() === 'group' ? 'Group' : 'User'
 
     setRoleBinding((rb) => {
       const savedUsers = rb.subjectKind === 'User' ? rb.subjectNames : rb.users
