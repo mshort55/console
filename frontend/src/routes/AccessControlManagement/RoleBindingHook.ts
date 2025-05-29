@@ -1,9 +1,10 @@
 /* Copyright Contributors to the Open Cluster Management project */
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
+import { ClusterRoleBinding, RoleBinding } from '../../resources/access-control'
 
-const RoleBindingHook = <T>() => {
+const useRoleBinding = <T>() => {
   const [selected, setSelected] = useState<T[]>([])
-  const [selectedSubjectType, setSelectedSubjectType] = useState<'User' | 'Group'>('User')
+  const [selectedSubjectKind, setSelectedSubjectKind] = useState<'User' | 'Group'>('User')
   const [selectedSubjectNames, setSelectedSubjectNames] = useState<string[]>([])
   const [selectedUsers, setSelectedUsers] = useState<string[]>([])
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
@@ -12,7 +13,7 @@ const RoleBindingHook = <T>() => {
   const [selectedNamespaces, setSelectedNamespaces] = useState<string[]>([])
 
   useEffect(() => {
-    switch (selectedSubjectType) {
+    switch (selectedSubjectKind) {
       case 'Group':
         setSelectedGroups(selectedSubjectNames)
         break
@@ -20,12 +21,12 @@ const RoleBindingHook = <T>() => {
         setSelectedUsers(selectedSubjectNames)
         break
     }
-  }, [selectedSubjectNames, selectedSubjectType])
+  }, [selectedSubjectNames, selectedSubjectKind])
 
   const onNamespaceChange = (values: string[]) => setSelectedNamespaces(values)
-  const onSubjectTypeChange = (value: string) => {
+  const onSubjectKindChange = (value: string) => {
     setSelectedSubjectNames(value === 'group' ? selectedGroups : selectedUsers)
-    setSelectedSubjectType(value === 'group' ? 'Group' : 'User')
+    setSelectedSubjectKind(value === 'group' ? 'Group' : 'User')
   }
   const onSubjectNameChange = (values: string[]) => setSelectedSubjectNames(values)
   const onRoleChange = (values: string[]) => {
@@ -33,23 +34,39 @@ const RoleBindingHook = <T>() => {
     setSelectedRoleName((values?.length && values[0]) || '')
   }
 
+  const setCurrentSubjectKind = useCallback((roleBinding: RoleBinding[] | ClusterRoleBinding) => {
+    let firstSubjectKind: 'User' | 'Group' | undefined
+    if (Array.isArray(roleBinding)) {
+      // RoleBinding
+      firstSubjectKind = roleBinding[0]?.subject?.kind || roleBinding[0]?.subjects?.[0].kind
+    } else {
+      // ClusterRoleBinding
+      firstSubjectKind = roleBinding?.subject?.kind || roleBinding?.subjects?.[0].kind
+    }
+
+    if (firstSubjectKind) {
+      setSelectedSubjectKind(firstSubjectKind)
+    }
+  }, [])
+
   return {
     selected,
-    setSelected,
-    selectedSubjectType,
+    selectedSubjectKind,
     selectedSubjectNames,
-    setSelectedSubjectNames,
     selectedRoleName,
-    setSelectedRoleName,
     selectedRoleNames,
-    setSelectedRoleNames,
     selectedNamespaces,
+    setSelected,
+    setSelectedSubjectNames,
+    setSelectedRoleName,
+    setSelectedRoleNames,
     setSelectedNamespaces,
+    setCurrentSubjectKind,
     onNamespaceChange,
-    onSubjectTypeChange,
+    onSubjectKindChange,
     onSubjectNameChange,
     onRoleChange,
   }
 }
 
-export { RoleBindingHook }
+export { useRoleBinding }
