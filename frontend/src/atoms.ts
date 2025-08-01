@@ -51,6 +51,7 @@ import {
   PolicyAutomation,
   PolicyReport,
   PolicySet,
+  RoleAssignment,
   SearchOperator,
   Secret,
   SubmarinerConfig,
@@ -124,6 +125,7 @@ export const hostedClustersState = AtomArray<HostedClusterK8sResource>()
 export const nodePoolsState = AtomArray<NodePoolK8sResource>()
 export const agentMachinesState = AtomArray<AgentMachineK8sResource>()
 export const accessControlState = AtomArray<AccessControl>()
+export const roleAssignmentsState = AtomArray<RoleAssignment>()
 
 export const settingsState = atom<Settings>({ key: 'settings', default: {} })
 

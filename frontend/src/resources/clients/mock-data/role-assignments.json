@@ -1,0 +1,315 @@
+[
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "cluster-admin-role"
+    },
+    "spec": {
+      "role": "cluster-admin-role",
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "johndoe",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": true
+            },
+            {
+              "name": "staging-cluster",
+              "clusterWide": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "namespace-viewer-role"
+    },
+    "spec": {
+      "role": "namespace-viewer-role",
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "development-team",
+          "clusters": [
+            {
+              "name": "development-cluster",
+              "clusterWide": false,
+              "namespaces": ["frontend", "backend", "database"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "service-reader-role"
+    },
+    "spec": {
+      "role": "service-reader-role",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "monitoring-service",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": false,
+              "namespaces": ["monitoring", "logging"]
+            },
+            {
+              "name": "staging-cluster",
+              "clusterWide": false,
+              "namespaces": ["monitoring"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "multi-subject-editor-role"
+    },
+    "spec": {
+      "role": "multi-subject-editor-role",
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "janesmith",
+          "clusters": [
+            {
+              "name": "development-cluster",
+              "clusterWide": false,
+              "namespaces": ["api", "web"]
+            }
+          ]
+        },
+        {
+          "kind": "Group",
+          "name": "qa-team",
+          "clusters": [
+            {
+              "name": "testing-cluster",
+              "clusterWide": false,
+              "namespaces": ["qa-environment"]
+            }
+          ]
+        },
+        {
+          "kind": "ServiceAccount",
+          "name": "deployment-bot",
+          "clusters": [
+            {
+              "name": "staging-cluster",
+              "clusterWide": false,
+              "namespaces": ["deployment"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "security-auditor-role"
+    },
+    "spec": {
+      "role": "security-auditor-role",
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "security-team",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": true
+            },
+            {
+              "name": "staging-cluster",
+              "clusterWide": true
+            },
+            {
+              "name": "development-cluster",
+              "clusterWide": true
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "backup-operator-role"
+    },
+    "spec": {
+      "role": "backup-operator-role",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "backup-operator",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": false,
+              "namespaces": ["backup-system", "storage"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "network-manager-role"
+    },
+    "spec": {
+      "role": "network-manager-role",
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "networkadmin",
+          "clusters": [
+            {
+              "name": "edge-cluster-1",
+              "clusterWide": false,
+              "namespaces": ["networking", "ingress"]
+            },
+            {
+              "name": "edge-cluster-2",
+              "clusterWide": false,
+              "namespaces": ["networking", "ingress"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "cross-cluster-coordinator-role"
+    },
+    "spec": {
+      "role": "cross-cluster-coordinator-role",
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "coordinator",
+          "clusters": [
+            {
+              "name": "hub-cluster",
+              "clusterWide": true
+            }
+          ]
+        },
+        {
+          "kind": "ServiceAccount",
+          "name": "cluster-sync-service",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": false,
+              "namespaces": ["coordination"]
+            },
+            {
+              "name": "staging-cluster",
+              "clusterWide": false,
+              "namespaces": ["coordination"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "database-maintainer-role"
+    },
+    "spec": {
+      "role": "database-maintainer-role",
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "database-team",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": false,
+              "namespaces": ["database", "redis", "mongodb"]
+            },
+            {
+              "name": "staging-cluster",
+              "clusterWide": false,
+              "namespaces": ["database-staging"]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "apiVersion": "rbac.open-cluster-management.io/v1alpha1",
+    "kind": "RoleAssignment",
+    "metadata": {
+      "name": "system-observer-role"
+    },
+    "spec": {
+      "role": "system-observer-role",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "metrics-collector",
+          "clusters": [
+            {
+              "name": "production-cluster",
+              "clusterWide": true
+            }
+          ]
+        },
+        {
+          "kind": "ServiceAccount",
+          "name": "log-aggregator",
+          "clusters": [
+            {
+              "name": "staging-cluster",
+              "clusterWide": false,
+              "namespaces": ["kube-system", "monitoring"]
+            }
+          ]
+        },
+        {
+          "kind": "User",
+          "name": "operations",
+          "clusters": [
+            {
+              "name": "development-cluster",
+              "clusterWide": false,
+              "namespaces": ["default", "system"]
+            }
+          ]
+        }
+      ]
+    }
+  }
+]

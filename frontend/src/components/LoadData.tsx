@@ -630,6 +630,7 @@ export function LoadData(props: { children?: ReactNode }) {
 
     if (process.env.MODE !== 'plugin') {
       checkLoggedIn()
+      initializeMockData()
     }
   }, [])
 
