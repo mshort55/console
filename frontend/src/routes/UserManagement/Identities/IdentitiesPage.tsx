@@ -11,6 +11,7 @@ export default function IdentitiesPage() {
   const isUsersActive = location.pathname.startsWith(NavigationPath.identitiesUsers)
   const isGroupsActive = location.pathname.startsWith(NavigationPath.identitiesGroups)
   const isServiceAccountsActive = location.pathname.startsWith(NavigationPath.identitiesServiceAccounts)
+  const isPermissionsActive = location.pathname.startsWith(NavigationPath.identitiesPermissions)
 
   return (
     <AcmPage
@@ -29,6 +30,9 @@ export default function IdentitiesPage() {
               </AcmSecondaryNavItem>
               <AcmSecondaryNavItem isActive={isServiceAccountsActive}>
                 <Link to={NavigationPath.identitiesServiceAccounts}>{t('Service Accounts')}</Link>
+              </AcmSecondaryNavItem>
+              <AcmSecondaryNavItem isActive={isPermissionsActive}>
+                <Link to={NavigationPath.identitiesPermissions}>{t('Permissions')}</Link>
               </AcmSecondaryNavItem>
             </AcmSecondaryNav>
           }

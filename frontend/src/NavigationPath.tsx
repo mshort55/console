@@ -205,6 +205,9 @@ export enum NavigationPath {
   identitiesServiceAccountsRoleAssignments = '/multicloud/user-management/identities/service-accounts/:id/role-assignments',
   identitiesServiceAccountsGroups = '/multicloud/user-management/identities/service-accounts/:id/groups',
 
+  // TODO: Move Permissions to proper location when ready
+  identitiesPermissions = '/multicloud/user-management/identities/permissions',
+
   // RBAC Roles
   roles = '/multicloud/user-management/roles',
   rolesDetails = '/multicloud/user-management/roles/:id',

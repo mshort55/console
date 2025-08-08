@@ -1,0 +1,224 @@
+{
+    "apiVersion": "rbac.authorization.k8s.io/v1",
+    "kind": "ClusterRole",
+    "metadata": {
+        "creationTimestamp": "2025-07-31T02:03:00Z",
+        "labels": {
+            "rbac.open-cluster-management.io/filter": "vm-clusterroles"
+        },
+        "name": "kubevirt.io:admin",
+        "resourceVersion": "1270329",
+        "uid": "53e9b312-c662-475e-8531-7894596ef26e"
+    },
+    "rules": [
+        {
+            "apiGroups": [
+                "subresources.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachineinstances/console",
+                "virtualmachineinstances/vnc",
+                "virtualmachineinstances/vnc/screenshot",
+                "virtualmachineinstances/portforward",
+                "virtualmachineinstances/guestosinfo",
+                "virtualmachineinstances/filesystemlist",
+                "virtualmachineinstances/userlist",
+                "virtualmachineinstances/sev/fetchcertchain",
+                "virtualmachineinstances/sev/querylaunchmeasurement",
+                "virtualmachineinstances/usbredir"
+            ],
+            "verbs": [
+                "get"
+            ]
+        },
+        {
+            "apiGroups": [
+                "subresources.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachineinstances/pause",
+                "virtualmachineinstances/unpause",
+                "virtualmachineinstances/addvolume",
+                "virtualmachineinstances/removevolume",
+                "virtualmachineinstances/freeze",
+                "virtualmachineinstances/unfreeze",
+                "virtualmachineinstances/softreboot",
+                "virtualmachineinstances/sev/setupsession",
+                "virtualmachineinstances/sev/injectlaunchsecret"
+            ],
+            "verbs": [
+                "update"
+            ]
+        },
+        {
+            "apiGroups": [
+                "subresources.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachines/expand-spec",
+                "virtualmachines/portforward"
+            ],
+            "verbs": [
+                "get"
+            ]
+        },
+        {
+            "apiGroups": [
+                "subresources.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachines/start",
+                "virtualmachines/stop",
+                "virtualmachines/restart",
+                "virtualmachines/addvolume",
+                "virtualmachines/removevolume",
+                "virtualmachines/migrate",
+                "virtualmachines/memorydump"
+            ],
+            "verbs": [
+                "update"
+            ]
+        },
+        {
+            "apiGroups": [
+                "subresources.kubevirt.io"
+            ],
+            "resources": [
+                "expand-vm-spec"
+            ],
+            "verbs": [
+                "update"
+            ]
+        },
+        {
+            "apiGroups": [
+                "kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachines",
+                "virtualmachineinstances",
+                "virtualmachineinstancepresets",
+                "virtualmachineinstancereplicasets",
+                "virtualmachineinstancemigrations"
+            ],
+            "verbs": [
+                "get",
+                "delete",
+                "create",
+                "update",
+                "patch",
+                "list",
+                "watch",
+                "deletecollection"
+            ]
+        },
+        {
+            "apiGroups": [
+                "snapshot.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachinesnapshots",
+                "virtualmachinesnapshotcontents",
+                "virtualmachinerestores"
+            ],
+            "verbs": [
+                "get",
+                "delete",
+                "create",
+                "update",
+                "patch",
+                "list",
+                "watch",
+                "deletecollection"
+            ]
+        },
+        {
+            "apiGroups": [
+                "export.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachineexports"
+            ],
+            "verbs": [
+                "get",
+                "delete",
+                "create",
+                "update",
+                "patch",
+                "list",
+                "watch",
+                "deletecollection"
+            ]
+        },
+        {
+            "apiGroups": [
+                "clone.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachineclones"
+            ],
+            "verbs": [
+                "get",
+                "delete",
+                "create",
+                "update",
+                "patch",
+                "list",
+                "watch",
+                "deletecollection"
+            ]
+        },
+        {
+            "apiGroups": [
+                "instancetype.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachineinstancetypes",
+                "virtualmachineclusterinstancetypes",
+                "virtualmachinepreferences",
+                "virtualmachineclusterpreferences"
+            ],
+            "verbs": [
+                "get",
+                "delete",
+                "create",
+                "update",
+                "patch",
+                "list",
+                "watch",
+                "deletecollection"
+            ]
+        },
+        {
+            "apiGroups": [
+                "pool.kubevirt.io"
+            ],
+            "resources": [
+                "virtualmachinepools"
+            ],
+            "verbs": [
+                "get",
+                "delete",
+                "create",
+                "update",
+                "patch",
+                "list",
+                "watch",
+                "deletecollection"
+            ]
+        },
+        {
+            "apiGroups": [
+                "migrations.kubevirt.io"
+            ],
+            "resources": [
+                "migrationpolicies"
+            ],
+            "verbs": [
+                "get",
+                "list",
+                "watch"
+            ]
+        }
+    ]
+}

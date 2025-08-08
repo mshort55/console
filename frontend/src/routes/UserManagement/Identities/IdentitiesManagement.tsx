@@ -5,6 +5,7 @@ import IdentitiesPage from './IdentitiesPage'
 import { Users } from './Users/Users'
 import { Groups } from './Groups/Groups'
 import { ServiceAccounts } from './ServiceAccounts/ServiceAccounts'
+import { Permissions } from './Permissions/Permissions'
 import { UserDetail } from './Users/UserDetail'
 import { UserYaml } from './Users/UserYaml'
 import { UserRoleAssignments } from './Users/UserRoleAssignments'
@@ -64,6 +65,7 @@ export default function IdentitiesManagement() {
         <Route path={identitiesChildPath(NavigationPath.identitiesUsers)} element={<Users />} />
         <Route path={identitiesChildPath(NavigationPath.identitiesGroups)} element={<Groups />} />
         <Route path={identitiesChildPath(NavigationPath.identitiesServiceAccounts)} element={<ServiceAccounts />} />
+        <Route path={identitiesChildPath(NavigationPath.identitiesPermissions)} element={<Permissions />} />
       </Route>
 
       {/* Default redirect to users */}
