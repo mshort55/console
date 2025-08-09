@@ -4,7 +4,7 @@ import { PageSection, Label, Flex, FlexItem } from '@patternfly/react-core'
 import { cellWidth } from '@patternfly/react-table'
 import { useMemo } from 'react'
 import { useTranslation } from '../../../../lib/acm-i18next'
-import { AcmTable, IAcmTableColumn } from '../../../../ui-components'
+import { AcmTable, IAcmTableColumn, compareStrings } from '../../../../ui-components'
 import { ClusterRole } from '../../../../resources/rbac'
 import { Rule } from '../../../../resources/kubernetes-client'
 import clusterRoleData from './mock-data/kubevirt.io:admin.json'
@@ -26,7 +26,7 @@ export function Permissions() {
       {
         id: 'actions',
         header: t('Actions'),
-        sort: 'verbs',
+        sort: (a: Rule, b: Rule) => compareStrings(a.verbs.join(', '), b.verbs.join(', ')),
         search: 'verbs',
         cell: (item) => {
           return (
@@ -44,7 +44,7 @@ export function Permissions() {
       {
         id: 'apiGroups',
         header: t('API groups'),
-        sort: 'apiGroups',
+        sort: (a: Rule, b: Rule) => compareStrings(a.apiGroups.join(', '), b.apiGroups.join(', ')),
         search: 'apiGroups',
         cell: (item) => {
           return item.apiGroups.length > 0 ? item.apiGroups.join(', ') : ''
@@ -54,7 +54,7 @@ export function Permissions() {
       {
         id: 'resources',
         header: t('Resources'),
-        sort: 'resources',
+        sort: (a: Rule, b: Rule) => compareStrings(a.resources.join(', '), b.resources.join(', ')),
         search: 'resources',
         cell: (item) => {
           return (
@@ -89,6 +89,7 @@ export function Permissions() {
         emptyState={<div>{t('No permissions found')}</div>}
         autoHidePagination={true}
         initialPerPage={100}
+        fuseThreshold={0.1}
       />
     </PageSection>
   )
