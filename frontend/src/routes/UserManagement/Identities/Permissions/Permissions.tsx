@@ -5,6 +5,7 @@ import { cellWidth } from '@patternfly/react-table'
 import { useMemo } from 'react'
 import { useTranslation } from '../../../../lib/acm-i18next'
 import { AcmTable, IAcmTableColumn } from '../../../../ui-components'
+import clusterRoleData from './mock-data/kubevirt.io:admin.json'
 
 interface Permission {
   id: string
@@ -13,50 +14,12 @@ interface Permission {
   resources: string[]
 }
 
-const mockPermissions: Permission[] = [
-  {
-    id: '1',
-    actions: ['use'],
-    apiGroups: ['security.openshift.io'],
-    resources: ['SCC securitycontextconstraints'],
-  },
-  {
-    id: '2',
-    actions: ['get', 'list', 'watch', 'update', 'patch'],
-    apiGroups: ['operator.openshift.io'],
-    resources: ['CCSI clustercsidrivers'],
-  },
-  {
-    id: '3',
-    actions: ['get', 'list', 'watch', 'update', 'patch'],
-    apiGroups: ['operator.openshift.io'],
-    resources: ['CCSI clustercsidrivers/status'],
-  },
-  {
-    id: '4',
-    actions: ['get', 'list', 'watch', 'create', 'update', 'patch', 'delete'],
-    apiGroups: [],
-    resources: ['CM configmaps'],
-  },
-  {
-    id: '5',
-    actions: ['watch', 'list', 'get'],
-    apiGroups: [],
-    resources: ['CM configmaps'],
-  },
-  {
-    id: '6',
-    actions: ['watch', 'list', 'get', 'create', 'delete', 'patch', 'update'],
-    apiGroups: ['rbac.authorization.k8s.io'],
-    resources: ['CRB clusterrolebindings'],
-  },
-  {
-    id: '7',
-    actions: ['watch', 'list', 'get', 'create', 'delete', 'patch', 'update'],
-    apiGroups: ['rbac.authorization.k8s.io'],
-    resources: ['CR clusterroles', 'RB rolebindings', 'R roles'],
-  },
-]
+const mockPermissions: Permission[] = clusterRoleData.rules.map((rule, index) => ({
+  id: `${index + 1}`,
+  actions: rule.verbs,
+  apiGroups: rule.apiGroups,
+  resources: rule.resources,
+}))
 
 export function Permissions() {
   const { t } = useTranslation()
@@ -64,6 +27,7 @@ export function Permissions() {
   const columns = useMemo<IAcmTableColumn<Permission>[]>(
     () => [
       {
+        id: 'actions',
         header: t('Actions'),
         sort: 'actions',
         search: 'actions',
@@ -71,7 +35,9 @@ export function Permissions() {
           return (
             <div>
               {item.actions.map((action, index) => (
-                <div key={index}>{action}</div>
+                <div key={index}>
+                  <strong>{action}</strong>
+                </div>
               ))}
             </div>
           )
@@ -79,6 +45,7 @@ export function Permissions() {
         transforms: [cellWidth(15)],
       },
       {
+        id: 'apiGroups',
         header: t('API groups'),
         sort: 'apiGroups',
         search: 'apiGroups',
@@ -88,6 +55,7 @@ export function Permissions() {
         transforms: [cellWidth(25)],
       },
       {
+        id: 'resources',
         header: t('Resources'),
         sort: 'resources',
         search: 'resources',
