@@ -1,6 +1,6 @@
 /* Copyright Contributors to the Open Cluster Management project */
 
-import { PageSection } from '@patternfly/react-core'
+import { PageSection, Label, Flex, FlexItem } from '@patternfly/react-core'
 import { cellWidth } from '@patternfly/react-table'
 import { useMemo } from 'react'
 import { useTranslation } from '../../../../lib/acm-i18next'
@@ -12,13 +12,19 @@ import clusterRoleData from './mock-data/kubevirt.io:admin.json'
 const clusterRole = clusterRoleData as ClusterRole
 const rules: Rule[] = clusterRole.rules
 
+const blacklist = ['ASS', 'FART']
+export const kindToAbbreviation = (kind: string) => {
+  const abbreviatedKind = (kind.replace(/[^A-Z]/g, '') || kind.toUpperCase()).slice(0, 4)
+  return blacklist.includes(abbreviatedKind) ? abbreviatedKind.slice(0, -1) : abbreviatedKind
+}
+
 export function Permissions() {
   const { t } = useTranslation()
 
   const columns = useMemo<IAcmTableColumn<Rule>[]>(
     () => [
       {
-        id: 'verbs',
+        id: 'actions',
         header: t('Actions'),
         sort: 'verbs',
         search: 'verbs',
@@ -51,7 +57,18 @@ export function Permissions() {
         sort: 'resources',
         search: 'resources',
         cell: (item) => {
-          return item.resources.join(' ')
+          return (
+            <Flex spaceItems={{ default: 'spaceItemsSm' }}>
+              {item.resources.map((resource, index) => (
+                <FlexItem key={index}>
+                  <Label isCompact color="blue">
+                    {kindToAbbreviation(resource)}
+                  </Label>{' '}
+                  {resource}
+                </FlexItem>
+              ))}
+            </Flex>
+          )
         },
         transforms: [cellWidth(60)],
       },
@@ -70,6 +87,8 @@ export function Permissions() {
         keyFn={keyFn}
         items={rules}
         emptyState={<div>{t('No permissions found')}</div>}
+        autoHidePagination={true}
+        initialPerPage={100}
       />
     </PageSection>
   )
