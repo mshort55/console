@@ -5,38 +5,29 @@ import { cellWidth } from '@patternfly/react-table'
 import { useMemo } from 'react'
 import { useTranslation } from '../../../../lib/acm-i18next'
 import { AcmTable, IAcmTableColumn } from '../../../../ui-components'
+import { ClusterRole } from '../../../../resources/rbac'
+import { Rule } from '../../../../resources/kubernetes-client'
 import clusterRoleData from './mock-data/kubevirt.io:admin.json'
 
-interface Permission {
-  id: string
-  actions: string[]
-  apiGroups: string[]
-  resources: string[]
-}
-
-const mockPermissions: Permission[] = clusterRoleData.rules.map((rule, index) => ({
-  id: `${index + 1}`,
-  actions: rule.verbs,
-  apiGroups: rule.apiGroups,
-  resources: rule.resources,
-}))
+const clusterRole = clusterRoleData as ClusterRole
+const rules: Rule[] = clusterRole.rules
 
 export function Permissions() {
   const { t } = useTranslation()
 
-  const columns = useMemo<IAcmTableColumn<Permission>[]>(
+  const columns = useMemo<IAcmTableColumn<Rule>[]>(
     () => [
       {
-        id: 'actions',
+        id: 'verbs',
         header: t('Actions'),
-        sort: 'actions',
-        search: 'actions',
+        sort: 'verbs',
+        search: 'verbs',
         cell: (item) => {
           return (
             <div>
-              {item.actions.map((action, index) => (
+              {item.verbs.map((verb, index) => (
                 <div key={index}>
-                  <strong>{action}</strong>
+                  <strong>{verb}</strong>
                 </div>
               ))}
             </div>
@@ -60,7 +51,7 @@ export function Permissions() {
         sort: 'resources',
         search: 'resources',
         cell: (item) => {
-          return item.resources.join(', ')
+          return item.resources.join(' ')
         },
         transforms: [cellWidth(60)],
       },
@@ -68,18 +59,16 @@ export function Permissions() {
     [t]
   )
 
-  const keyFn = (item: Permission) => item.id
+  const keyFn = (rule: Rule) => `rule-${rules.indexOf(rule)}`
 
   return (
     <PageSection>
-      <AcmTable<Permission>
+      <AcmTable<Rule>
         id="permissions-table"
         key="permissions-table"
         columns={columns}
         keyFn={keyFn}
-        items={mockPermissions}
-        autoHidePagination
-        initialPerPage={100}
+        items={rules}
         emptyState={<div>{t('No permissions found')}</div>}
       />
     </PageSection>

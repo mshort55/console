@@ -1,6 +1,6 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import { GroupKindType, ServiceAccountKindType, UserKindType } from './rbac'
-export interface PolicyRule {
+export interface Rule {
   verbs: string[]
   apiGroups: string[]
   resources: string[]

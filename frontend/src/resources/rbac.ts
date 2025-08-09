@@ -2,7 +2,7 @@
 import { Metadata } from './metadata'
 import { IResourceDefinition } from './resource'
 import { listResources } from './utils/resource-request'
-import { PolicyRule, LocalObjectReference, Subject, RoleRef } from './kubernetes-client'
+import { Rule, LocalObjectReference, Subject, RoleRef } from './kubernetes-client'
 import { ObjectReference } from '@openshift-console/dynamic-plugin-sdk'
 
 export const UserApiVersion = 'user.openshift.io/v1'
@@ -89,7 +89,7 @@ export interface ClusterRole {
   apiVersion: RbacApiVersionType
   kind: ClusterRoleKindType
   metadata: Metadata
-  rules: PolicyRule[]
+  rules: Rule[]
 }
 
 export interface ClusterRoleBinding {
@@ -104,7 +104,7 @@ export interface Role {
   apiVersion: RbacApiVersionType
   kind: RoleKindType
   metadata: Metadata
-  rules: PolicyRule[]
+  rules: Rule[]
 }
 
 export interface RoleBinding {
