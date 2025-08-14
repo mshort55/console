@@ -2,11 +2,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom-v5-compat'
 import { NavigationPath, createRoutePathFunction } from '../../../NavigationPath'
 import { RolesPage, RolesContextProvider } from './RolesPage'
-import { RolePage } from './RolePage'
-import { RoleDetail } from './RoleDetail'
-import { RoleYaml } from './RoleYaml'
-import { RolePermissions } from './RolePermissions'
-import { RoleAssignments } from './RoleAssignments'
+import { RolePage } from './Role/RolePage'
+import { RoleDetail } from './Role/RoleDetail'
+import { RoleYaml } from './Role/RoleYaml'
+import { RolePermissions } from './Role/RolePermissions'
+import { RoleAssignments } from './Role/RoleAssignments'
 
 const rolesChildPath = createRoutePathFunction(NavigationPath.roles)
 

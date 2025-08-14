@@ -20,7 +20,7 @@ import { useLocation, useNavigate, Outlet, Link } from 'react-router-dom-v5-comp
 import { Pages, usePageVisitMetricHandler } from '../../../hooks/console-metrics'
 import { useTranslation } from '../../../lib/acm-i18next'
 import { NavigationPath } from '../../../NavigationPath'
-import { RoleAssignments } from '../../UserManagement/Roles/RoleAssignments'
+import { RoleAssignments } from '../../UserManagement/Roles/Role/RoleAssignments'
 import { OCP_DOC } from '../../../lib/doc-util'
 import { PluginContext } from '../../../lib/PluginContext'
 import { ConfigMap } from '../../../resources'
