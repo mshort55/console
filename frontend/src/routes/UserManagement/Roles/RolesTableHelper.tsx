@@ -16,7 +16,7 @@ export interface Role {
   description: string
   category: string
   type: string
-  permissions: number
+  permissions: string
   uid: string
 }
 

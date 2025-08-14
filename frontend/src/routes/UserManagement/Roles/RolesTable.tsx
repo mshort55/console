@@ -2,50 +2,42 @@
 import { PageSection } from '@patternfly/react-core'
 import { useMemo, useCallback } from 'react'
 import { useTranslation } from '../../../lib/acm-i18next'
-import { AcmEmptyState, AcmTable, compareStrings } from '../../../ui-components'
+import { useQuery } from '../../../lib/useQuery'
+import { listVirtualizationClusterRoles, ClusterRole } from '../../../resources/rbac'
+import { AcmEmptyState, AcmTable, compareStrings, AcmLoadingPage } from '../../../ui-components'
 import { rolesTableColumns, useFilters, Role } from './RolesTableHelper'
-
-const mockRoles: Role[] = [
-  {
-    name: 'cluster-admin',
-    description: 'Full administrative access to the cluster',
-    category: 'System',
-    type: 'ClusterRole',
-    permissions: 156,
-    uid: 'cluster-admin-uid-1',
-  },
-  {
-    name: 'view',
-    description: 'Read-only access to most objects in the cluster',
-    category: 'System',
-    type: 'ClusterRole',
-    permissions: 45,
-    uid: 'view-uid-2',
-  },
-  {
-    name: 'edit',
-    description: 'Read and write access to most objects in a namespace',
-    category: 'System',
-    type: 'Role',
-    permissions: 78,
-    uid: 'edit-uid-3',
-  },
-]
 
 const RolesTable = () => {
   const { t } = useTranslation()
-  const roles = useMemo(() => mockRoles?.sort((a, b) => compareStrings(a.name, b.name)) ?? [], [])
+  const { data: clusterRoles, loading } = useQuery(listVirtualizationClusterRoles)
+
+  const roles = useMemo(() => {
+    if (!clusterRoles) return []
+
+    return clusterRoles
+      .map(
+        (clusterRole: ClusterRole): Role => ({
+          name: clusterRole.metadata.name || '',
+          description: 'kubevirt.io cluster role',
+          category: 'Virtualization',
+          type: 'ClusterRole',
+          permissions: 'TBD',
+          uid: clusterRole.metadata.uid || clusterRole.metadata.name || '',
+        })
+      )
+      .sort((a, b) => compareStrings(a.name, b.name))
+  }, [clusterRoles])
 
   const keyFn = useCallback((role: Role) => role.uid, [])
 
   const filters = useFilters()
   const columns = rolesTableColumns({ t })
 
-  // TODO: implement loading page?
-
   return (
     <PageSection>
-      {
+      {loading ? (
+        <AcmLoadingPage />
+      ) : (
         <AcmTable<Role>
           key="roles-table"
           filters={filters}
@@ -54,7 +46,7 @@ const RolesTable = () => {
           items={roles}
           emptyState={<AcmEmptyState key="rolesEmptyState" title={t('No roles')} />}
         />
-      }
+      )}
     </PageSection>
   )
 }
