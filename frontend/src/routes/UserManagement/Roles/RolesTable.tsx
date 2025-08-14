@@ -2,14 +2,14 @@
 import { PageSection } from '@patternfly/react-core'
 import { useMemo, useCallback } from 'react'
 import { useTranslation } from '../../../lib/acm-i18next'
-import { useQuery } from '../../../lib/useQuery'
-import { listVirtualizationClusterRoles, ClusterRole } from '../../../resources/rbac'
+import { ClusterRole } from '../../../resources/rbac'
 import { AcmEmptyState, AcmTable, compareStrings, AcmLoadingPage } from '../../../ui-components'
 import { rolesTableColumns, useFilters, Role } from './RolesTableHelper'
+import { useRolesContext } from './RolesPage'
 
 const RolesTable = () => {
   const { t } = useTranslation()
-  const { data: clusterRoles, loading } = useQuery(listVirtualizationClusterRoles)
+  const { clusterRoles, loading } = useRolesContext()
 
   const roles = useMemo(() => {
     if (!clusterRoles) return []

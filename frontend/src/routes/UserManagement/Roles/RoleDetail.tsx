@@ -1,20 +1,13 @@
 /* Copyright Contributors to the Open Cluster Management project */
 import { PageSection } from '@patternfly/react-core'
-import { useParams } from 'react-router-dom-v5-compat'
-import { useTranslation } from '../../../lib/acm-i18next'
-import { AcmPage, AcmPageContent, AcmPageHeader } from '../../../ui-components'
+//import { useTranslation } from '../../../lib/acm-i18next'
+import { useCurrentRole } from './RolesPage'
 
 const RoleDetail = () => {
-  const { t } = useTranslation()
-  const { id = undefined } = useParams()
+  //const { t } = useTranslation()
+  const role = useCurrentRole()
 
-  return (
-    <AcmPage header={<AcmPageHeader title={t('Role Details')} description={`Role: ${id}`} />}>
-      <AcmPageContent id="role-details">
-        <PageSection>Role detail page for ID: {id}</PageSection>
-      </AcmPageContent>
-    </AcmPage>
-  )
+  return <PageSection>Role detail page for Role: {role?.metadata.name}</PageSection>
 }
 
 export { RoleDetail }

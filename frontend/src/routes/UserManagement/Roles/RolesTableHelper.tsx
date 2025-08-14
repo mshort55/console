@@ -27,7 +27,7 @@ type RolesTableHelperProps = {
 const COLUMN_CELLS = {
   NAME: (role: Role, search: string) => (
     <span style={{ whiteSpace: 'nowrap' }}>
-      <Link to={generatePath(NavigationPath.rolesDetails, { id: role.uid })}>
+      <Link to={generatePath(NavigationPath.roleDetails, { id: role.uid })}>
         <HighlightSearchText text={role.name} searchText={search} isTruncate />
       </Link>
     </span>
