@@ -343,17 +343,19 @@ jest.mock('../../../ui-components', () => {
             Export all to CSV
           </button>
 
-          {/* Table data - simplified */}
           {filteredItems?.map((item: FlattenedRoleAssignment) => (
             <div key={item.name}>
-              <div>
-                {item.subject.kind}: {item.subject.name}
-              </div>
-              <div>{item.clusterRole}</div>
-              <div>{(item.clusterSelection?.clusterNames || []).join(', ') || 'No clusters'}</div>
-              <div>{item.targetNamespaces?.join(', ') || 'No namespaces'}</div>
-              <div>{`Status: ${item.status?.status ?? 'Unknown'}`}</div>
-              <button onClick={() => mockToastContext.addAlert({ title: 'Action', type: 'info' })}>Row Actions</button>
+              {columns?.map((col: any, colIndex: number) => (
+                <div key={colIndex}>
+                  {col.isActionCol ? (
+                    <button onClick={() => mockToastContext.addAlert({ title: 'Action', type: 'info' })}>
+                      Row Actions
+                    </button>
+                  ) : (
+                    col.cell?.(item) ?? 'Error rendering cell'
+                  )}
+                </div>
+              ))}
             </div>
           ))}
         </div>
@@ -412,6 +414,16 @@ jest.mock('./RoleAssignmentActionDropdown', () => ({
         Delete role assignment
       </button>
     </div>
+  ),
+}))
+
+jest.mock('./RoleAssignmentLabel', () => ({
+  RoleAssignmentLabel: ({ elements }: { elements: string[] }) => <span>{elements.join(', ')}</span>,
+}))
+
+jest.mock('./RoleAssignmentStatusComponent', () => ({
+  RoleAssignmentStatusComponent: ({ status }: { status?: { status: string } }) => (
+    <span>Status: {status?.status ?? 'Unknown'}</span>
   ),
 }))
 
@@ -648,6 +660,47 @@ describe('RoleAssignments', () => {
 
     // Verify flattened structure: test.user1 should appear in 2 separate rows
     expect(screen.getAllByText(/User: test\.user1/i)).toHaveLength(2)
+  })
+
+  it('displays "All Namespaces" when targetNamespaces is undefined', async () => {
+    const roleAssignmentWithUndefinedNamespaces: FlattenedRoleAssignment = {
+      name: 'test-undefined-ns',
+      clusterRole: 'admin',
+      targetNamespaces: undefined,
+      clusterSelection: {
+        type: 'clusterNames',
+        clusterNames: ['test-cluster'],
+      },
+      relatedMulticlusterRoleAssignment: mockMulticlusterRoleAssignments[0],
+      subject: {
+        name: 'test.user',
+        kind: 'User',
+      },
+    }
+
+    render(<Component roleAssignments={[roleAssignmentWithUndefinedNamespaces]} />)
+    await waitForText('All Namespaces')
+    expect(screen.getByText('All Namespaces')).toBeInTheDocument()
+  })
+
+  it('displays "All Namespaces" when targetNamespaces property is omitted', async () => {
+    const roleAssignmentWithoutNamespaces = {
+      name: 'test-omitted-ns',
+      clusterRole: 'admin',
+      clusterSelection: {
+        type: 'clusterNames',
+        clusterNames: ['test-cluster'],
+      },
+      relatedMulticlusterRoleAssignment: mockMulticlusterRoleAssignments[0],
+      subject: {
+        name: 'test.user',
+        kind: 'User',
+      },
+    } as FlattenedRoleAssignment
+
+    render(<Component roleAssignments={[roleAssignmentWithoutNamespaces]} />)
+    await waitForText('All Namespaces')
+    expect(screen.getByText('All Namespaces')).toBeInTheDocument()
   })
 
   describe('Column Display and Hidden Columns', () => {

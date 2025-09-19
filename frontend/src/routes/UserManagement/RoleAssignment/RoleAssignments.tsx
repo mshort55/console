@@ -213,8 +213,10 @@ const RoleAssignments = ({
     },
     {
       header: t('Namespaces'),
-      cell: (roleAssignment) => <RoleAssignmentLabel elements={roleAssignment.targetNamespaces} numLabel={5} />,
-      exportContent: (roleAssignment) => roleAssignment.targetNamespaces?.join(', ') ?? '',
+      cell: (roleAssignment) => (
+        <RoleAssignmentLabel elements={roleAssignment.targetNamespaces || [t('All Namespaces')]} numLabel={5} />
+      ),
+      exportContent: (roleAssignment) => roleAssignment.targetNamespaces?.join(', ') ?? t('All Namespaces'),
     },
     {
       header: t('Status'),

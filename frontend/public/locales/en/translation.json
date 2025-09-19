@@ -440,6 +440,7 @@
   "Alerts": "Alerts",
   "All copied": "All copied",
   "All DNS records must be subdomains of this base and include the cluster name. This cannot be changed after cluster installation.": "All DNS records must be subdomains of this base and include the cluster name. This cannot be changed after cluster installation.",
+  "All Namespaces": "All Namespaces",
   "All namespaces on the cluster (default)": "All namespaces on the cluster (default)",
   "All resources in this group have deployed on the target clusters, although their status might not be successful.": "All resources in this group have deployed on the target clusters, although their status might not be successful.",
   "All Subscriptions": "All Subscriptions",
